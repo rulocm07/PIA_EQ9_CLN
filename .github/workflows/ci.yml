@@ -22,7 +22,7 @@ jobs:
         env:
           DATABASE_PATH: /tmp/hotel_schema.db
         run: |
-          python scripts/export_openapi.py
+          PYTHONPATH=. python scripts/export_openapi.py
           git diff --exit-code -- docs/api/openapi.yaml
   docker:
     runs-on: ubuntu-latest

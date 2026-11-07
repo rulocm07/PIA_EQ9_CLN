@@ -69,15 +69,27 @@ class EventRow(Base):
 class SQLiteRepository:
     """Nombre de compatibilidad; dialecto configurado mediante DATABASE_URL."""
     def __init__(self, db_path=None, database_url=None):
-        url = database_url or os.getenv('DATABASE_URL')
-        if url and url.startswith('postgres://'):
+        # Prioridad: URL explícita > ruta explícita > variable de entorno > SQLite local.
+        # Las pruebas unitarias proporcionan db_path para aislar cada caso, incluso
+        # cuando Docker define DATABASE_URL para las pruebas de integración.
+        if database_url is not None:
+            url = database_url
+        elif db_path is not None:
+            path = str(db_path)
+            if path != ':memory:':
+                Path(path).parent.mkdir(parents=True, exist_ok=True)
+            url = f'sqlite:///{path}'
+        else:
+            url = os.getenv('DATABASE_URL')
+            if not url:
+                path = os.getenv('DATABASE_PATH', './hotel_v2.db')
+                if path != ':memory:':
+                    Path(path).parent.mkdir(parents=True, exist_ok=True)
+                url = f'sqlite:///{path}'
+        if url.startswith('postgres://'):
             url = 'postgresql+psycopg://' + url[len('postgres://'):]
-        elif url and url.startswith('postgresql://'):
+        elif url.startswith('postgresql://'):
             url = 'postgresql+psycopg://' + url[len('postgresql://'):]
-        if url is None:
-            db_path = str(db_path or os.getenv('DATABASE_PATH', './hotel_v2.db'))
-            if db_path != ':memory:': Path(db_path).parent.mkdir(parents=True, exist_ok=True)
-            url = f'sqlite:///{db_path}'
         # Un archivo nuevo v2 evita reescribir la BD heredada; ver README (migración).
         kwargs = {'connect_args':{'timeout':30, 'check_same_thread':False}, 'poolclass':NullPool} if url.startswith('sqlite:') else {'pool_pre_ping':True}
         self.engine = create_engine(url, **kwargs)
