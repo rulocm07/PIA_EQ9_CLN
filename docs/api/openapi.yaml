@@ -1,0 +1,950 @@
+openapi: 3.1.0
+info:
+  title: Hotel Costa Azul API
+  description: PIA académico BR-01..BR-20. Pagos y cargos a tarjetas simulados; roles declarativos para la demo.
+    No introducir documentos reales.
+  version: 2.0.0
+paths:
+  /health:
+    get:
+      tags:
+      - Sistema
+      summary: Health
+      operationId: health_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /rooms:
+    get:
+      tags:
+      - Habitaciones
+      summary: Rooms
+      operationId: rooms_rooms_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /availability:
+    get:
+      tags:
+      - Reservaciones
+      summary: Availability
+      operationId: availability_availability_get
+      parameters:
+      - name: check_in
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+          title: Check In
+      - name: check_out
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+          title: Check Out
+      - name: room_type
+        in: query
+        required: true
+        schema:
+          $ref: '#/components/schemas/RoomType'
+      - name: guests
+        in: query
+        required: true
+        schema:
+          type: integer
+          title: Guests
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /pricing/quote:
+    get:
+      tags:
+      - Reservaciones
+      summary: Quote
+      operationId: quote_pricing_quote_get
+      parameters:
+      - name: check_in
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+          title: Check In
+      - name: check_out
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+          title: Check Out
+      - name: room_type
+        in: query
+        required: true
+        schema:
+          $ref: '#/components/schemas/RoomType'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /reservations:
+    get:
+      tags:
+      - Reservaciones
+      summary: Reservations
+      operationId: reservations_reservations_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+    post:
+      tags:
+      - Reservaciones
+      summary: Create Reservation
+      operationId: create_reservation_reservations_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationInput'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /reservations/{reservation_id}/confirm:
+    post:
+      tags:
+      - Reservaciones
+      summary: Confirm
+      operationId: confirm_reservations__reservation_id__confirm_post
+      parameters:
+      - name: reservation_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Reservation Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /reservations/{reservation_id}/cancel:
+    post:
+      tags:
+      - Reservaciones
+      summary: Cancel
+      operationId: cancel_reservations__reservation_id__cancel_post
+      parameters:
+      - name: reservation_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Reservation Id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/CancelInput'
+              - type: 'null'
+              title: P
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /reservations/{reservation_id}/check-in:
+    post:
+      tags:
+      - Estancia
+      summary: Check In
+      operationId: check_in_reservations__reservation_id__check_in_post
+      parameters:
+      - name: reservation_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Reservation Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckInInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /reservations/{reservation_id}/change-room:
+    post:
+      tags:
+      - Estancia
+      summary: Change Room
+      operationId: change_room_reservations__reservation_id__change_room_post
+      parameters:
+      - name: reservation_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Reservation Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeRoomInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /reservations/{reservation_id}/early-departure:
+    post:
+      tags:
+      - Estancia
+      summary: Early Departure
+      operationId: early_departure_reservations__reservation_id__early_departure_post
+      parameters:
+      - name: reservation_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Reservation Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EarlyDepartureInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /reservations/{reservation_id}/checkout-preview:
+    get:
+      tags:
+      - Estancia
+      summary: Checkout Preview
+      operationId: checkout_preview_reservations__reservation_id__checkout_preview_get
+      parameters:
+      - name: reservation_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Reservation Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /reservations/{reservation_id}/check-out:
+    post:
+      tags:
+      - Estancia
+      summary: Check Out
+      operationId: check_out_reservations__reservation_id__check_out_post
+      parameters:
+      - name: reservation_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Reservation Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /folios:
+    get:
+      tags:
+      - Folios
+      summary: Folios
+      operationId: folios_folios_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /folios/{folio_id}:
+    get:
+      tags:
+      - Folios
+      summary: Folio
+      operationId: folio_folios__folio_id__get
+      parameters:
+      - name: folio_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Folio Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /folios/{folio_id}/consumptions:
+    post:
+      tags:
+      - Folios
+      summary: Consumption
+      operationId: consumption_folios__folio_id__consumptions_post
+      parameters:
+      - name: folio_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Folio Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsumptionInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /folios/{folio_id}/payments:
+    post:
+      tags:
+      - Folios
+      summary: Payment
+      operationId: payment_folios__folio_id__payments_post
+      parameters:
+      - name: folio_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Folio Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /folios/{folio_id}/inspection/request:
+    post:
+      tags:
+      - Folios
+      summary: Inspection Request
+      operationId: inspection_request_folios__folio_id__inspection_request_post
+      parameters:
+      - name: folio_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Folio Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /folios/{folio_id}/inspection/complete:
+    post:
+      tags:
+      - Folios
+      summary: Inspection Complete
+      operationId: inspection_complete_folios__folio_id__inspection_complete_post
+      parameters:
+      - name: folio_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Folio Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /rooms/{room_number}/clean:
+    post:
+      tags:
+      - Habitaciones
+      summary: Clean
+      operationId: clean_rooms__room_number__clean_post
+      parameters:
+      - name: room_number
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Room Number
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /rooms/{room_number}/out-of-service:
+    post:
+      tags:
+      - Habitaciones
+      summary: Block
+      operationId: block_rooms__room_number__out_of_service_post
+      parameters:
+      - name: room_number
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Room Number
+      - name: x-role-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Role-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintenanceInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /rooms/{room_number}/reactivate:
+    post:
+      tags:
+      - Habitaciones
+      summary: Reactivate
+      operationId: reactivate_rooms__room_number__reactivate_post
+      parameters:
+      - name: room_number
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Room Number
+      - name: x-role-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Role-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActorInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /folios/{folio_id}/adjustments:
+    post:
+      tags:
+      - Administración
+      summary: Adjustments
+      operationId: adjustments_folios__folio_id__adjustments_post
+      parameters:
+      - name: folio_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Folio Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdjustmentInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /reports/daily:
+    get:
+      tags:
+      - Reportes
+      summary: Daily
+      operationId: daily_reports_daily_get
+      parameters:
+      - name: day
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+          title: Day
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /jobs/process-no-shows:
+    post:
+      tags:
+      - Sistema
+      summary: Run No Shows
+      operationId: run_no_shows_jobs_process_no_shows_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobInput'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ActorInput:
+      properties:
+        actor_role:
+          type: string
+          title: Actor Role
+      type: object
+      required:
+      - actor_role
+      title: ActorInput
+    AdjustmentInput:
+      properties:
+        action:
+          type: string
+          title: Action
+          description: descuento, condonación, anulación
+        value:
+          anyOf:
+          - type: number
+            exclusiveMinimum: 0.0
+          - type: string
+            pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Value
+          description: Porcentaje para descuento, monto MXN para condonación y anulación
+        admin_pin:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Admin Pin
+      type: object
+      required:
+      - action
+      - value
+      title: AdjustmentInput
+    CancelInput:
+      properties:
+        waive_penalty:
+          type: boolean
+          title: Waive Penalty
+          default: false
+        admin_pin:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Admin Pin
+      type: object
+      title: CancelInput
+    ChangeRoomInput:
+      properties:
+        new_room_number:
+          type: string
+          title: New Room Number
+        reason:
+          type: string
+          title: Reason
+          description: avería o upgrade
+      type: object
+      required:
+      - new_room_number
+      - reason
+      title: ChangeRoomInput
+    CheckInInput:
+      properties:
+        document_type:
+          type: string
+          title: Document Type
+          description: Solo INE o Pasaporte; NO enviar número ni imagen del documento
+        companions:
+          items:
+            type: string
+          type: array
+          title: Companions
+        incidental_type:
+          type: string
+          title: Incidental Type
+          description: voucher (1000 MXN) o efectivo (500 MXN); sin datos de tarjeta
+      type: object
+      required:
+      - document_type
+      - incidental_type
+      title: CheckInInput
+    ConfirmInput:
+      properties:
+        deposit:
+          anyOf:
+          - type: number
+            minimum: 0.0
+          - type: string
+            pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          - type: 'null'
+          title: Deposit
+        card_guarantee:
+          type: boolean
+          title: Card Guarantee
+          default: false
+      type: object
+      title: ConfirmInput
+    ConsumptionInput:
+      properties:
+        category:
+          type: string
+          title: Category
+        description:
+          type: string
+          minLength: 1
+          title: Description
+        amount:
+          anyOf:
+          - type: number
+            exclusiveMinimum: 0.0
+          - type: string
+            pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Amount
+        signature:
+          type: string
+          minLength: 1
+          title: Signature
+          description: Evidencia de firma; demostración, NO una firma real
+        room_number:
+          type: string
+          title: Room Number
+      type: object
+      required:
+      - category
+      - description
+      - amount
+      - signature
+      - room_number
+      title: ConsumptionInput
+    EarlyDepartureInput:
+      properties:
+        notice_at:
+          type: string
+          format: date-time
+          title: Notice At
+        departure_at:
+          type: string
+          format: date-time
+          title: Departure At
+      type: object
+      required:
+      - notice_at
+      - departure_at
+      title: EarlyDepartureInput
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    JobInput:
+      properties:
+        admin_pin:
+          type: string
+          title: Admin Pin
+      type: object
+      required:
+      - admin_pin
+      title: JobInput
+    MaintenanceInput:
+      properties:
+        reason:
+          type: string
+          minLength: 2
+          title: Reason
+        reactivation:
+          type: string
+          format: date
+          title: Reactivation
+        actor_role:
+          type: string
+          title: Actor Role
+      type: object
+      required:
+      - reason
+      - reactivation
+      - actor_role
+      title: MaintenanceInput
+    PaymentInput:
+      properties:
+        amount:
+          anyOf:
+          - type: number
+            exclusiveMinimum: 0.0
+          - type: string
+            pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Amount
+        method:
+          type: string
+          title: Method
+      type: object
+      required:
+      - amount
+      - method
+      title: PaymentInput
+    ReservationInput:
+      properties:
+        guest_name:
+          type: string
+          maxLength: 160
+          minLength: 2
+          title: Guest Name
+        check_in:
+          type: string
+          format: date
+          title: Check In
+        check_out:
+          type: string
+          format: date
+          title: Check Out
+        room_type:
+          $ref: '#/components/schemas/RoomType'
+        guests:
+          type: integer
+          maximum: 4.0
+          minimum: 1.0
+          title: Guests
+      type: object
+      required:
+      - guest_name
+      - check_in
+      - check_out
+      - room_type
+      - guests
+      title: ReservationInput
+    RoomType:
+      type: string
+      enum:
+      - Estándar
+      - Doble
+      - Suite
+      title: RoomType
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

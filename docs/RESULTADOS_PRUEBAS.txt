@@ -1,0 +1,21 @@
+.........s.............                                                  [100%]
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.13.5-final-0 ________________
+
+Name                               Stmts   Miss  Cover   Missing
+----------------------------------------------------------------
+src/__init__.py                        0      0   100%
+src/api/__init__.py                    0      0   100%
+src/api/main.py                      194     40    79%   17-23, 29, 32-34, 126, 134, 153-154, 158-159, 163-164, 168-169, 173-174, 178-179, 183, 192-193, 197-198, 202-203, 207-208, 215, 231, 235-236, 241, 247
+src/application/__init__.py            0      0   100%
+src/application/services.py          276      9    97%   97, 114, 135, 205, 212, 254, 280-281, 286
+src/domain/__init__.py                 0      0   100%
+src/domain/hotel.py                  186      2    99%   15, 116
+src/domain/specifications.py          33      0   100%
+src/domain/state_machine.py            8      0   100%
+src/infrastructure/__init__.py         0      0   100%
+src/infrastructure/repository.py     153      5    97%   74, 76, 104, 107-108
+----------------------------------------------------------------
+TOTAL                                850     56    93%
+Required test coverage of 80% reached. Total coverage: 93.41%
+22 passed, 1 skipped in 1.77s

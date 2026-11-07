@@ -1,0 +1,26 @@
+# Blueprint para Render (requiere vincular GitHub y confirmar plan/costos).
+# No despliega automáticamente al crear el ZIP. No exponer datos reales.
+services:
+  - type: web
+    name: hotel-costa-azul-pia
+    runtime: docker
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hotel-costa-azul-pia-db
+          property: connectionString
+      - key: ENABLE_SCHEDULER
+        value: "true"
+      - key: HOLY_WEEK_RANGES
+        value: ""
+      - key: ADMIN_PIN_HASH
+        sync: false
+      - key: ROLE_TOKEN_ADMIN
+        sync: false
+      - key: ROLE_TOKEN_MAINTENANCE
+        sync: false
+databases:
+  - name: hotel-costa-azul-pia-db
+    databaseName: hotel
+    user: hotel
